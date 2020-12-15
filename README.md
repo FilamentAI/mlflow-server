@@ -83,4 +83,4 @@ with mlflow.start_run(run_name="test-experiment"):
 Default credentials in production docker-compose setup are:
 
 - Username: filament
-- Password: hunting-FAIR-LIFT-thick
+- Password: supersecretpassword
