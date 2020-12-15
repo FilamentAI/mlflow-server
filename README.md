@@ -84,3 +84,7 @@ Default credentials in production docker-compose setup are:
 
 - Username: filament
 - Password: supersecretpassword
+
+If you want to change the username and password then simply override the env vars `AUTH_USER` and `AUTH_PASSWORD` in the `.env` file.
+
+You need to use Caddy to generate a new password hash. This can be achieved by running `docker run --rm -it caddy:2 caddy hash-password` and entering the password of your choice
