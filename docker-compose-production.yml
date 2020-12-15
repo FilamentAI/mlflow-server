@@ -1,0 +1,58 @@
+version: "3.0"
+services:
+  caddy:
+    depends_on:
+      - mlflow
+    image: caddy:2.0.0-rc.3
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    environment:
+      DOMAIN: ${DOMAIN}
+      AUTH_USER: ${AUTH_USER}
+      AUTH_PASSWORD: ${AUTH_PASSWORD}
+    volumes:
+      - ./persistence/caddy_data:/data
+      - ./resources/configuration/Caddyfile:/etc/caddy/Caddyfile
+    entrypoint: ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+
+
+  mlflow:
+    build: .
+    #ports:
+    #  - 5000:5000
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      S3_BUCKET_NAME: ${BUCKET_NAME}
+      AWS_ACCESS_KEY_ID: ${ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${SECRET_ACCESS_KEY}
+      MLFLOW_S3_ENDPOINT_URL: ${S3_ENDPOINT}
+      GOOGLE_AUTH_STRING: ${GOOGLE_AUTH_STRING}
+
+
+    # You may wish to use minio for storage of ML models rather than a cloud S3 bucket
+    # if so, uncomment this service and set ACCESS_KEY_ID and SECRET_ACCESS_KEY to some secret values in your .env file 
+    # minio:
+    #     image: minio/minio
+    #     ports:
+    #         - 9000:9000
+    #     environment: 
+    #         MINIO_ACCESS_KEY: ${ACCESS_KEY_ID}
+    #         MINIO_SECRET_KEY: ${SECRET_ACCESS_KEY}
+    #     volumes:
+    #         - ./miniodata:/data
+    #     command: server /data
+    
+
+    # You may wish to occasionally turn on adminer for administration of your MySQL server
+    # Adminer is a security risk so we do not recommend enabling this in production
+    # adminer:
+    #     image: adminer
+    #     restart: always
+    #     ports:
+    #     - 8080:8080

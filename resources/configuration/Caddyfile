@@ -1,0 +1,6 @@
+{$DOMAIN} {
+  basicauth / {
+    {$AUTH_USER} {$AUTH_PASSWORD}
+  }
+  reverse_proxy mlflow:5000
+}
