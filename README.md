@@ -1,6 +1,6 @@
 # Filament MLFlow configuration
 
-This repository contains a `Dockerfile` and basic `docker-compose.yml` for running an MLFlow server that is backed by MySQL and Minio storage.
+This repository contains a `Dockerfile` and basic docker compose file (`docker-compose-production.yml`) for running an MLFlow server that is backed by MySQL and Minio storage.
 
 We also provide a basic Caddy HTTP/HTTPS proxy server configuration
 
@@ -38,6 +38,21 @@ The server image exposes an unencrypted HTTP service on port 5000 by default.
 MLFlow does not provide a built in authentication mechanism - they recommend running the service behind an nginx proxy with basic auth enabled.
 
 MLFlow will automatically try to run applicable database migrations on boot.
+
+# Using with Google Cloud Storage
+
+To authenticate with Google Cloud Storage instead of S3 or Minio you have to set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to a 
+valid service account  [Credentials file](https://cloud.google.com/docs/authentication/production).
+
+In order to avoid baking a JSON file into our docker image or setting up a volume mount just for a small json file, we provide a new environment variable `GOOGLE_AUTH_STRING` which should contain the base64 encoded value of your credentials file.
+
+If your credentials file is called `service_account.json` then you can create a .env file in the same folder as your docker-compose.yml containing
+```
+GOOGLE_AUTH_STRING=`base64 -w 0 < service_account.json`
+```
+Docker compose will automatically try to source this file when it runs and pass the auth string through to the container.
+
+**NB: if GOOGLE_AUTH_STRING is set to a non-empty value the container then will try to use GCS. Otherwise it will default to S3-like storage**
 
 
 # End User Example
